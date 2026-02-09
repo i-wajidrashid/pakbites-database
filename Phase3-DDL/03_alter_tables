@@ -1,0 +1,10 @@
+ALTER TABLE Restaurants ADD COLUMN discount_percentage DECIMAL(5, 2) DEFAULT 0.00;
+ALTER TABLE Restaurants DROP COLUMN discount_percentage;
+ALTER TABLE Customers 
+    ADD COLUMN loyalty_points INT DEFAULT 0;
+    ALTER TABLE Customers 
+    RENAME COLUMN phone to phone_number;
+    ALTER TABLE Customers 
+    MODIFY COLUMN address VARCHAR(500);
+CREATE INDEX idx_order_date ON Orders(order_date);
+CREATE INDEX idx_order_menu_item ON OrderItems(order_id, menu_item_id);
