@@ -1,77 +1,113 @@
-create table city(<br>
-city_name varchar(30) primary key,<br>
-city_province varchar(20)<br>
-);<br>
-create table rest(<br>
-rest_id int,<br>
-rest_name varchar(20),<br>
-rest_address varchar(20),<br>
-rest_phone int,<br>
-rest_email varchar(20),<br>
-city_name varchar(30) primary key,<br>
-rest_cuisinetype varchar(20),<br>
-rating decimal(2,1),<br>
-FOREIGN KEY (city_name)<br>
-    REFERENCES city (city_name)<br>
-);<br>
-create table menu_item(<br>
-item_id int,<br>
-item_name varchar(20) primary key,<br>
-item_description varchar(100),<br>
-item_price decimal(6,2),<br>
-item_category varchar(20),<br>
-item_status varchar(30)<br>
-);<br>
-create table orders(<br>
-order_id int,<br>
-order_dateandtime datetime primary key,<br>
-delivery_address varchar(100),<br>
-total_amount decimal(7,2),<br>
-delivery_fee decimal(3,2),<br>
-delivery_status varchar(50),<br>
-payement_method varchar(30)<br>
-);<br>
-create table customers(<br>
-customer_id int,<br>
-customer_full_name varchar(50),<br>
-customer_email varchar(20),<br> 
-customer_phone int,<br>
-customer_address varchar(100),<br>
-city_name varchar(30) primary key,<br>
-customer_registration_date date,<br>
-FOREIGN KEY (city_name)<br>
-    REFERENCES city (city_name)<br>
-);<br>
-create table reviews(<br>
-review_id int,<br>
-rating decimal(2,1),<br>
-comment_text varchar(100),<br> 
-review_date date primary key<br>
-);<br>
-create table delivery_rider(<br> 
-delivery_rider_id int,<br>
-delivery_rider_name varchar(30),<br>
-delivery_rider_phone int,<br>
-delivery_rider_vehicle_type varchar(30),<br>
-city_name varchar(30) primary key,<br>
-delivery_rider_availability_status varchar(30),<br>
-FOREIGN KEY (city_name)<br>
-    REFERENCES city (city_name)<br>
-);<br>
-create table status_history(<br>
-status_history_id int,<br>
-order_status varchar(50) primary key,<br>
-order_history varchar(50)<br>
-);<br>
-<br>
-Relationships with Cardinality <br>
-1. A restaurant belongs to exactly one city.                Many to One<br>
-2. Each restaurant has a menu with multiple items.           One to One<br>
-3. A customer can place multiple orders.                     One to Many<br>
-4. Each order belongs to one customer.                       Many to One<br>
-5. Each order belongs to one restaurant.                     Many to Many<br>
-6. Each order is assigned to one delivery rider.             Many to One<br>
-7. Each order contains one or more order items.              One to Many <br>
-8. A customer can only review a restaurant once.             One to One<br>
-<br>
-<br>This design satisfies 1NF because not every attribute is dependant on a primary key.
+
+CREATE DATABASE IF NOT EXISTS pakbites_database;
+USE pakbites_database;
+
+CREATE TABLE Cities (
+    CityID INT AUTO_INCREMENT PRIMARY KEY,
+    CityName VARCHAR(100) NOT NULL,
+    Province VARCHAR(100) NOT NULL
+);
+
+CREATE TABLE Restaurants (
+    RestaurantID INT AUTO_INCREMENT PRIMARY KEY,
+    RestaurantName VARCHAR(150) NOT NULL,
+    Address TEXT NOT NULL,
+    Phone VARCHAR(20) NOT NULL,
+    Email VARCHAR(100) UNIQUE,
+    CuisineType VARCHAR(50),
+    Rating DECIMAL(2, 1) DEFAULT 0.0 CHECK (Rating >= 1 AND Rating <= 5),
+    CityID INT,
+    FOREIGN KEY (CityID) REFERENCES Cities(CityID)
+);
+
+CREATE TABLE MenuItems (
+    ItemID INT AUTO_INCREMENT PRIMARY KEY,
+    RestaurantID INT NOT NULL,
+    ItemName VARCHAR(150) NOT NULL,
+    Description TEXT,
+    Price DECIMAL(10, 2) NOT NULL,
+    Category ENUM('appetizer', 'main', 'dessert', 'drink', 'side') NOT NULL,
+    IsAvailable BOOLEAN DEFAULT TRUE,
+    FOREIGN KEY (RestaurantID) REFERENCES Restaurants(RestaurantID)
+);
+
+CREATE TABLE Customers (
+    CustomerID INT AUTO_INCREMENT PRIMARY KEY,
+    FullName VARCHAR(150) NOT NULL,
+    Email VARCHAR(100) UNIQUE NOT NULL,
+    Phone VARCHAR(20) NOT NULL,
+    Address TEXT NOT NULL,
+    RegistrationDate DATETIME DEFAULT CURRENT_TIMESTAMP,
+    CityID INT,
+    FOREIGN KEY (CityID) REFERENCES Cities(CityID)
+);
+
+CREATE TABLE Riders (
+    RiderID INT AUTO_INCREMENT PRIMARY KEY,
+    RiderName VARCHAR(150) NOT NULL,
+    Phone VARCHAR(20) NOT NULL,
+    VehicleType ENUM('bike', 'car', 'bicycle') NOT NULL,
+    CityID INT,
+    AvailabilityStatus ENUM('available', 'busy', 'offline') DEFAULT 'offline',
+    FOREIGN KEY (CityID) REFERENCES Cities(CityID)
+);
+
+CREATE TABLE Orders (
+    OrderID INT AUTO_INCREMENT PRIMARY KEY,
+    CustomerID INT NOT NULL,
+    RestaurantID INT NOT NULL,
+    RiderID INT,
+    OrderDateTime DATETIME DEFAULT CURRENT_TIMESTAMP,
+    DeliveryAddress TEXT NOT NULL,
+    TotalAmount DECIMAL(10, 2) NOT NULL,
+    DeliveryFee DECIMAL(10, 2) NOT NULL,
+    Status ENUM('pending', 'confirmed', 'preparing', 'on_the_way', 'delivered', 'cancelled') DEFAULT 'pending',
+    PaymentMethod ENUM('cash', 'card', 'jazzcash', 'easypaisa') NOT NULL,
+    FOREIGN KEY (CustomerID) REFERENCES Customers(CustomerID),
+    FOREIGN KEY (RestaurantID) REFERENCES Restaurants(RestaurantID),
+    FOREIGN KEY (RiderID) REFERENCES Riders(RiderID)
+);
+
+CREATE TABLE OrderItems (
+    OrderItemID INT AUTO_INCREMENT PRIMARY KEY,
+    OrderID INT NOT NULL,
+    ItemID INT NOT NULL,
+    Quantity INT NOT NULL CHECK (Quantity > 0),
+    LineTotal DECIMAL(10, 2) NOT NULL, -- (Quantity * Price at time of order)
+    FOREIGN KEY (OrderID) REFERENCES Orders(OrderID),
+    FOREIGN KEY (ItemID) REFERENCES MenuItems(ItemID)
+);
+
+CREATE TABLE Reviews (
+    ReviewID INT AUTO_INCREMENT PRIMARY KEY,
+    CustomerID INT NOT NULL,
+    RestaurantID INT NOT NULL,
+    Rating INT NOT NULL CHECK (Rating >= 1 AND Rating <= 5),
+    Comment TEXT,
+    ReviewDate DATETIME DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE KEY UniqueReview (CustomerID, RestaurantID),
+    FOREIGN KEY (CustomerID) REFERENCES Customers(CustomerID),
+    FOREIGN KEY (RestaurantID) REFERENCES Restaurants(RestaurantID)
+);
+
+CREATE TABLE OrderStatusHistory (
+    HistoryID INT AUTO_INCREMENT PRIMARY KEY,
+    OrderID INT NOT NULL,
+    OldStatus VARCHAR(50),
+    NewStatus VARCHAR(50) NOT NULL,
+    ChangedAt DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (OrderID) REFERENCES Orders(OrderID)
+    This design satisifies 3NF.
+    By creating a CityID foreign key, we ensure that all columns in the Restaurant, Customer, and Rider tables depend only on their respective Primary Keys.
+);
+Relationship and Cardinality
+City to Restaurant 1:M
+City to Customer/Rider 1:M
+Restaurant to MenuItem 1:M
+Customer to Order 1:M
+Restaurant to Order 1:M
+Rider to Order 1:M
+Order to OrderItem 1:M
+MenuItem to OrderItem 1:M
+Customer to Review 1:M
+Order to StatusHistory 1:M
