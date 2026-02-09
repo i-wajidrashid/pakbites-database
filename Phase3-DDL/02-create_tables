@@ -1,0 +1,101 @@
+CREATE TABLE Cities (
+    city_id INT AUTO_INCREMENT PRIMARY KEY,
+    city_name VARCHAR(100) NOT NULL,
+    province VARCHAR(100) NOT NULL,
+    postal_code VARCHAR(10),
+    UNIQUE (city_name, province)
+);
+
+CREATE TABLE Restaurants (
+    restaurant_id INT AUTO_INCREMENT PRIMARY KEY,
+    city_id INT NOT NULL,
+    name VARCHAR(255) NOT NULL,
+    address TEXT NOT NULL,
+    cuisine_type ENUM('Italian', 'Chinese', 'Indian', 'Fast Food', 'Mexican', 'Healthy', 'Other') NOT NULL,
+    rating DECIMAL(3, 2) DEFAULT 0.0,
+    is_active BOOLEAN DEFAULT TRUE,
+    FOREIGN KEY (city_id) REFERENCES Cities(city_id),
+    CONSTRAINT chk_restaurant_rating CHECK (rating >= 0 AND rating <= 5)
+);
+
+CREATE TABLE MenuItems (
+    item_id INT AUTO_INCREMENT PRIMARY KEY,
+    restaurant_id INT NOT NULL,
+    item_name VARCHAR(255) NOT NULL,
+    description TEXT,
+    category ENUM('Appetizer', 'Main Course', 'Dessert', 'Beverage', 'Side') NOT NULL,
+    price DECIMAL(10, 2) NOT NULL,
+    is_available BOOLEAN DEFAULT TRUE,
+    FOREIGN KEY (restaurant_id) REFERENCES Restaurants(restaurant_id),
+    CONSTRAINT chk_price_positive CHECK (price > 0)
+);
+CREATE TABLE Customers (
+    customer_id INT AUTO_INCREMENT PRIMARY KEY,
+    city_id INT NOT NULL,
+    first_name VARCHAR(100) NOT NULL,
+    last_name VARCHAR(100) NOT NULL,
+    email VARCHAR(255) UNIQUE NOT NULL,
+    phone VARCHAR(20) UNIQUE NOT NULL,
+    address TEXT NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (city_id) REFERENCES Cities(city_id)
+);
+
+CREATE TABLE DeliveryRiders (
+    rider_id INT AUTO_INCREMENT PRIMARY KEY,
+    city_id INT NOT NULL,
+    first_name VARCHAR(100) NOT NULL,
+    last_name VARCHAR(100) NOT NULL,
+    vehicle_type ENUM('Bicycle', 'Scooter', 'Car', 'Motorcycle') NOT NULL,
+    status ENUM('Available', 'Busy', 'Offline') DEFAULT 'Offline',
+    current_lat DECIMAL(9, 6),
+    current_lng DECIMAL(9, 6),
+    FOREIGN KEY (city_id) REFERENCES Cities(city_id)
+);
+CREATE TABLE Orders (
+    order_id INT AUTO_INCREMENT PRIMARY KEY,
+    customer_id INT NOT NULL,
+    restaurant_id INT NOT NULL,
+    rider_id INT,
+    total_amount DECIMAL(10, 2) NOT NULL DEFAULT 0.00,
+    order_status ENUM('Pending', 'Preparing', 'Out for Delivery', 'Delivered', 'Cancelled') DEFAULT 'Pending',
+    payment_method ENUM('Cash', 'Credit Card', 'Wallet', 'Digital Payment') NOT NULL,
+    ordered_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (customer_id) REFERENCES Customers(customer_id),
+    FOREIGN KEY (restaurant_id) REFERENCES Restaurants(restaurant_id),
+    FOREIGN KEY (rider_id) REFERENCES DeliveryRiders(rider_id)
+);
+
+CREATE TABLE OrderItems (
+    order_item_id INT AUTO_INCREMENT PRIMARY KEY,
+    order_id INT NOT NULL,
+    item_id INT NOT NULL,
+    quantity INT NOT NULL,
+    unit_price DECIMAL(10, 2) NOT NULL, 
+    line_total DECIMAL(10, 2) NOT NULL,
+    FOREIGN KEY (order_id) REFERENCES Orders(order_id),
+    FOREIGN KEY (item_id) REFERENCES MenuItems(item_id),
+    CONSTRAINT chk_quantity_positive CHECK (quantity > 0)
+);
+
+CREATE TABLE Reviews (
+    review_id INT AUTO_INCREMENT PRIMARY KEY,
+    customer_id INT NOT NULL,
+    restaurant_id INT NOT NULL,
+    rating INT NOT NULL,
+    comment TEXT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (customer_id) REFERENCES Customers(customer_id),
+    FOREIGN KEY (restaurant_id) REFERENCES Restaurants(restaurant_id),
+    UNIQUE (customer_id, restaurant_id),
+    CONSTRAINT chk_review_rating CHECK (rating BETWEEN 1 AND 5)
+);
+
+CREATE TABLE OrderStatusHistory (
+    history_id INT AUTO_INCREMENT PRIMARY KEY,
+    order_id INT NOT NULL,
+    old_status ENUM('Pending', 'Preparing', 'Out for Delivery', 'Delivered', 'Cancelled') NOT NULL,
+    new_status ENUM('Pending', 'Preparing', 'Out for Delivery', 'Delivered', 'Cancelled') NOT NULL,
+    changed_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (order_id) REFERENCES Orders(order_id)
+);
