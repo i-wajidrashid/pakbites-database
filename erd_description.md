@@ -64,7 +64,7 @@ order_status varchar(50) primary key,<br>
 order_history varchar(50)<br>
 );<br>
 <br>
-Relations<br>                                                    Cardinality<br>
+Relationships with Cardinality <br>
 1. A restaurant belongs to exactly one city.                Many to One<br>
 2. Each restaurant has a menu with multiple items.           One to One<br>
 3. A customer can place multiple orders.                     One to Many<br>
