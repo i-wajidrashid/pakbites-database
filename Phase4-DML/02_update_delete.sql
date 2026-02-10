@@ -1,3 +1,5 @@
+Update and Delete Queries
+
 update restaurants 
 set rating = 4.5 where restaurant_id = 1;
 
