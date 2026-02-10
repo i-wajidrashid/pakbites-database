@@ -1,0 +1,19 @@
+select r.name, count(o.order_id) as total_orders from restaurants r left join orders o on r.restaurant_id = o.restaurant_id group by r.restaurant_id, r.name;
+
+select r.name, sum(o.total_amount) as total_revenue from restaurants r join orders o on r.restaurant_id = o.restaurant_id group by r.restaurant_id, r.name order by total_revenue desc;
+
+select r.name, avg(rv.rating) as average_rating from restaurants r join reviews rv on r.restaurant_id = rv.restaurant_id group by r.restaurant_id, r.name having count(rv.review_id) >= 2;
+
+select order_status, count(*) as status_count from orders group by order_status;
+
+select dayname(ordered_at) as day_of_week, count(*) as order_count from orders group by day_of_week order by order_count desc limit 1;
+
+select r.name, monthname(o.ordered_at) as order_month, sum(o.total_amount) as monthly_revenue from restaurants r join orders o on r.restaurant_id = o.restaurant_id group by r.restaurant_id, r.name, order_month;
+
+select mi.item_name, sum(oi.quantity) as total_quantity from menuitems mi join orderitems oi on mi.item_id = oi.item_id group by mi.item_id, mi.item_name order by total_quantity desc limit 3;
+
+select c.city_name, avg(o.total_amount * 0.1) as average_delivery_fee from cities c join restaurants r on c.city_id = r.city_id join orders o on r.restaurant_id = o.restaurant_id group by c.city_id, c.city_name;
+
+select first_name, last_name from customers join orders on customers.customer_id = orders.customer_id group by customers.customer_id, first_name, last_name having count(orders.order_id) > 3;
+
+select payment_method, min(total_amount) as min_order, max(total_amount) as max_order, avg(total_amount) as avg_order from orders group by payment_method;
