@@ -1,0 +1,68 @@
+select * from Restaurants 
+where city_id = (select city_id from Cities where city_name = 'Lahore')
+order by rating desc;
+
+select
+    r.name as restaurant_name, 
+    m.item_name, 
+    m.price
+from MenuItems m
+JOIN Restaurants r ON m.restaurant_id = r.restaurant_id
+where m.price < 500
+ORDER BY m.price ASC;
+
+SELECT * FROM Orders 
+WHERE ordered_at >= NOW() - INTERVAL 7 DAY;
+
+SELECT * FROM customers where created_at between "2026-01-01" AND "2026-02-11";
+
+
+
+SELECT 
+    Cities.city_name
+FROM 
+    deliveryriders
+JOIN 
+    Cities ON deliveryriders.city_id = Cities.city_id
+WHERE 
+    deliveryriders.status = 'available';
+
+    SELECT 
+    r.name AS restaurant_name, 
+    m.item_name, 
+    m.price
+FROM MenuItems m
+JOIN Restaurants r ON m.restaurant_id = r.restaurant_id
+ORDER BY m.price DESC
+LIMIT 5;
+
+SELECT 
+    o.order_id,
+    CONCAT(c.first_name, ' ', c.last_name) AS customer_name,
+    r.name AS restaurant_name,
+    o.total_amount,
+    o.order_status
+FROM Orders o
+JOIN Customers c ON o.customer_id = c.customer_id
+JOIN Restaurants r ON o.restaurant_id = r.restaurant_id
+WHERE o.order_status = 'Delivered';
+
+select * FROM restaurants where city_id= 
+(select city_id from cities where city_name= "islamabad");
+
+SELECT 
+    CONCAT(c.first_name, ' ', c.last_name) AS customer_name,
+    r.name AS restaurant_name,
+    rv.rating,
+    rv.comment
+FROM Reviews rv
+JOIN Customers c ON rv.customer_id = c.customer_id
+JOIN Restaurants r ON rv.restaurant_id = r.restaurant_id
+WHERE rv.rating >= 4;
+
+SELECT 
+    item_name, 
+    price, 
+    category
+FROM MenuItems
+WHERE item_name LIKE '%chicken%';
