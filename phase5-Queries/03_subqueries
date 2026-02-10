@@ -1,0 +1,14 @@
+select * from customers where customer_id not in (select customer_id from orders);
+
+select name from restaurants where restaurant_id in (select restaurant_id from menuitems group by restaurant_id having avg(price) > (select avg(price) from menuitems));
+
+select c.first_name, c.last_name, sum(o.total_amount) as total_spent from customers c join orders o on c.customer_id = o.customer_id group by c.customer_id, c.first_name, c.last_name order by total_spent desc limit 1;
+
+select item_name from menuitems where item_id not exists (select item_id from orderitems where orderitems.item_id = menuitems.item_id);
+
+select city_name from cities where city_id in (select city_id from restaurants group by city_id having avg(rating) > 4.0);
+
+select * from orders o1 where ordered_at = (select max(ordered_at) from orders o2 where o2.customer_id = o1.customer_id);
+
+select first_name, last_name from deliveryriders where rider_id in (select rider_id from orders where order_status = 'delivered' 
+group by rider_id having count(*) > (select count(*) / count(distinct rider_id) from orders where order_status = 'delivered'));
