@@ -7,62 +7,62 @@ select
     m.item_name, 
     m.price
 from MenuItems m
-JOIN Restaurants r ON m.restaurant_id = r.restaurant_id
+join Restaurants r on m.restaurant_id = r.restaurant_id
 where m.price < 500
-ORDER BY m.price ASC;
+order by m.price ASC;
 
-SELECT * FROM Orders 
-WHERE ordered_at >= NOW() - INTERVAL 7 DAY;
+select * from Orders 
+where ordered_at >= now() - INTERVAL 7 DAY;
 
-SELECT * FROM customers where created_at between "2026-01-01" AND "2026-02-11";
+select * from customers where created_at between "2026-01-01" and "2026-02-11";
 
 
 
-SELECT 
+select 
     Cities.city_name
-FROM 
+from 
     deliveryriders
-JOIN 
-    Cities ON deliveryriders.city_id = Cities.city_id
-WHERE 
+join 
+    Cities on deliveryriders.city_id = Cities.city_id
+where 
     deliveryriders.status = 'available';
 
-    SELECT 
-    r.name AS restaurant_name, 
+    select 
+    r.name as restaurant_name, 
     m.item_name, 
     m.price
-FROM MenuItems m
-JOIN Restaurants r ON m.restaurant_id = r.restaurant_id
-ORDER BY m.price DESC
-LIMIT 5;
+from MenuItems m
+join Restaurants r on m.restaurant_id = r.restaurant_id
+order by m.price desc
+limit 5;
 
-SELECT 
+select 
     o.order_id,
-    CONCAT(c.first_name, ' ', c.last_name) AS customer_name,
-    r.name AS restaurant_name,
+    CONCAT(c.first_name, ' ', c.last_name) as customer_name,
+    r.name as restaurant_name,
     o.total_amount,
     o.order_status
-FROM Orders o
-JOIN Customers c ON o.customer_id = c.customer_id
-JOIN Restaurants r ON o.restaurant_id = r.restaurant_id
-WHERE o.order_status = 'Delivered';
+from Orders o
+join Customers c on o.customer_id = c.customer_id
+join Restaurants r on o.restaurant_id = r.restaurant_id
+where o.order_status = 'Delivered';
 
 select * FROM restaurants where city_id= 
 (select city_id from cities where city_name= "islamabad");
 
-SELECT 
-    CONCAT(c.first_name, ' ', c.last_name) AS customer_name,
-    r.name AS restaurant_name,
+select 
+    CONCAT(c.first_name, ' ', c.last_name) as customer_name,
+    r.name as restaurant_name,
     rv.rating,
     rv.comment
 FROM Reviews rv
-JOIN Customers c ON rv.customer_id = c.customer_id
-JOIN Restaurants r ON rv.restaurant_id = r.restaurant_id
-WHERE rv.rating >= 4;
+join Customers c on rv.customer_id = c.customer_id
+join Restaurants r on rv.restaurant_id = r.restaurant_id
+where rv.rating >= 4;
 
-SELECT 
+select 
     item_name, 
     price, 
     category
-FROM MenuItems
-WHERE item_name LIKE '%chicken%';
+from MenuItems
+where item_name like '%chicken%';
