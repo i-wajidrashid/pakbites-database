@@ -41,6 +41,6 @@ create function formatpkr(amount decimal(15,2))
 returns varchar(25)
 deterministic
 begin
-    return concat('rs. ', format(amount, 2));
+    return concat('Rs. ', format(amount, 2));
 end //
 delimiter ;
