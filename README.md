@@ -1,7 +1,7 @@
 PakBites
 PakBites is a company that manages several restaurants across different cities in Pakistan. It manages everything related to each restaurant like Customer Information , Order Information , Menu Information , Orders History Information , Restaurant Information etc.
 
-![alt text](image.png)
+![alt text](<Entity Relation Diagram.png>)
 
 The technology used in this whole project is MYSQL Workbench 8.0 CE.
 
