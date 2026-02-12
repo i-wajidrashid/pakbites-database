@@ -44,7 +44,7 @@ Use Stored Procedures , Triggers , Transactions.
 Features Implemented
 Functions , Stored Procedures , Triggers , Transactions , Views , Scheduled Events.
 
-3 Interesting Queries 
+3 Interesting Queries From Pakbitesdb
 1. find the top-spending customer to offer a loyalty reward.
 select 
     c.first_name, 
