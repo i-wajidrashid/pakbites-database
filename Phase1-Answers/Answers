@@ -1,0 +1,17 @@
+1.	What is the difference between git fetch and git pull?
+Git pull downloads all information from remote repository to local device and Git fetch downloads any selected information from remote repository to local device.
+
+2.	Explain what a "detached HEAD" state is and how you might end up in one.
+A detached HEAD state in Git occurs when the HEAD pointer points directly to a commit hash instead of a branch name and new commits will not be attached to any branch. 
+You might end up in this state by checking out a commit (git checkout <hash>) of remote branch directly. 
+
+3.	What does git stash do and when would you use it?
+Stash means temporarily saving any file in remote location. Stash is used when there are merge conflicts.
+
+4.	What is the difference between git merge and git rebase? Which is safer for beginners?
+Git merge and Git rebase are both used to integrate changes from one branch to another 
+but Git merge maintains a linear history, while Git rebase rewrites the project history. 
+For beginners, Git Merge is safer than Git rebase. 
+
+5.	Why should you never push sensitive information (passwords, API keys) to GitHub?
+Sensitive information should never be pushed to GitHub because the remote repository may be Public and everyone would be allowed to see that sensitive information.
